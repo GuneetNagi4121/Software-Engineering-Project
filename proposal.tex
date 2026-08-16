@@ -1,0 +1,163 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\setstretch{1.15}
+
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+
+\begin{document}
+
+\begin{center}
+    {\LARGE \textbf{CampusCycle}}\\[0.3cm]
+    {\Large \textbf{Smart Campus Bicycle Sharing and Mobility Management System}}\\[0.6cm]
+    \textbf{Project Proposal}\\[0.7cm]
+    \textbf{Team Members:}\\[0.2cm]
+    Guneet Singh Nagi\\
+    Prabhnoor Oberoi\\[0.5cm]
+    \textbf{Department:} Computer Science and Engineering
+\end{center}
+
+\section{Introduction}
+
+CampusCycle is a smart bicycle-sharing platform designed specifically for university campuses. The system allows students to locate, reserve, unlock, use, and return shared bicycles through a web application. Administrators can manage bicycles, stations, rentals, maintenance, and usage analytics.
+
+The project extends beyond basic rental functionality by incorporating QR-based bicycle identification, geofencing, maintenance reporting, usage analytics, and demand prediction. These features aim to make short-distance transportation within a large campus more convenient, affordable, sustainable, and manageable.
+
+\section{Problem Statement}
+
+Large university campuses often require students to travel considerable distances between hostels, academic blocks, libraries, cafeterias, sports facilities, and administrative buildings. Although bicycles can solve this last-mile mobility problem, a shared bicycle system requires efficient tracking and management.
+
+A conventional rental system does not adequately address problems such as uneven bicycle distribution, unauthorized use outside the campus, maintenance issues, and difficulty in predicting where bicycles will be needed.
+
+Therefore, the proposed system aims to develop a centralized smart campus bicycle-sharing platform that manages the bicycle fleet while using location and historical usage data to improve availability and operational efficiency.
+
+\section{Objectives}
+
+The main objectives of CampusCycle are:
+
+\begin{itemize}[leftmargin=*]
+    \item Provide students with a simple platform to find and rent campus bicycles.
+    \item Implement QR-based identification for individual bicycles.
+    \item Display bicycle and docking-station availability on an interactive campus map.
+    \item Maintain complete rental and return records.
+    \item Use geofencing to detect bicycles leaving the permitted campus area.
+    \item Allow students to report bicycle faults and maintenance problems.
+    \item Provide administrators with fleet, usage, and maintenance analytics.
+    \item Analyze historical rental data to predict bicycle demand at different stations.
+    \item Recommend redistribution of bicycles between stations based on predicted demand.
+\end{itemize}
+
+\section{Proposed System}
+
+The system will contain two major interfaces: a student application and an administrator dashboard.
+
+\subsection{Student Application}
+
+Students will be able to:
+
+\begin{itemize}[leftmargin=*]
+    \item Register and log in using their university account.
+    \item View nearby bicycle stations and available bicycles.
+    \item Scan a QR code to identify a bicycle.
+    \item Reserve and start a bicycle rental.
+    \item View the active ride and rental duration.
+    \item Return the bicycle at an approved station.
+    \item View previous rides and distance travelled.
+    \item Report mechanical or safety issues.
+    \item View personal mobility statistics and sustainability contributions.
+\end{itemize}
+
+\subsection{Administrator Dashboard}
+
+Administrators will be able to:
+
+\begin{itemize}[leftmargin=*]
+    \item Add, remove, and update bicycles and stations.
+    \item Monitor active rentals.
+    \item Track bicycle availability and locations.
+    \item View maintenance reports and bicycle status.
+    \item Detect geofence violations.
+    \item Analyze station-wise and time-wise usage.
+    \item View predicted demand for upcoming periods.
+    \item Receive recommendations for bicycle redistribution.
+\end{itemize}
+
+\section{Key Features}
+
+\subsection{QR-Based Bicycle Identification}
+
+Each bicycle will have a unique QR code. Scanning the code allows the backend to identify the bicycle and verify whether it is available, reserved, currently rented, or under maintenance.
+
+\subsection{Campus Geofencing}
+
+A virtual boundary will be defined around the campus. In an extended implementation with GPS-enabled hardware, the system can detect when a bicycle crosses this boundary and generate an alert for the administrator. For the software prototype, location data can be simulated or obtained from a mobile device.
+
+\subsection{Interactive Campus Map}
+
+The application will display stations and their current availability. Stations can be represented using status indicators such as available, low availability, and unavailable.
+
+\subsection{Maintenance Management}
+
+Students can report issues such as damaged brakes, flat tyres, or faulty lights. Repeated reports can increase the priority of a maintenance request, and bicycles marked unsafe can automatically become unavailable for new rentals.
+
+\subsection{Demand Prediction}
+
+Historical rental information will be analyzed using machine-learning techniques. Features may include station, time of day, day of week, previous demand, and number of active rentals. A regression or tree-based model will predict future demand.
+
+\subsection{Smart Redistribution}
+
+Predicted demand will be compared with current station capacity. The system can recommend moving bicycles from stations with excess supply to stations where demand is expected to be high.
+
+\section{System Architecture}
+
+The proposed architecture consists of:
+
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Frontend:} React.js with Tailwind CSS for the student and administrator interfaces.
+    \item \textbf{Backend:} Node.js and Express.js for authentication, rentals, bicycle management, maintenance, and REST APIs.
+    \item \textbf{Database:} MySQL for users, bicycles, stations, rentals, locations, maintenance records, and analytics data.
+    \item \textbf{Machine Learning Module:} Python with Scikit-learn for demand prediction and redistribution recommendations.
+    \item \textbf{Mapping:} Leaflet/OpenStreetMap or another suitable mapping service for the campus map.
+    \item \textbf{Optional Hardware Extension:} ESP32 with GPS and a lock mechanism for demonstrating real-time bicycle tracking.
+\end{enumerate}
+
+\section{Technology Stack}
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Component} & \textbf{Technology} \\
+\hline
+Frontend & React.js, Tailwind CSS \\
+Backend & Node.js, Express.js \\
+Database & MySQL \\
+Machine Learning & Python, Scikit-learn, Pandas \\
+Maps & Leaflet / OpenStreetMap \\
+Authentication & JWT / University Authentication \\
+Version Control & Git and GitHub \\
+Optional Hardware & ESP32, GPS module, electronic lock \\
+\end{tabular}
+\end{center}
+
+\section{Expected Outcome}
+
+At the end of the project, a working prototype of CampusCycle will allow a student to discover an available bicycle, scan its QR code, start a rental, view the ride status, and return the bicycle at an approved station. Administrators will have a dashboard for fleet and maintenance management.
+
+The system will additionally demonstrate analytics and a machine-learning model capable of predicting station-level bicycle demand. The prototype will provide a foundation that could later be extended to a real campus deployment with GPS trackers, electronic locks, payment integration, and mobile applications.
+
+\section{Project Scope}
+
+The minimum viable product will include authentication, bicycle and station management, QR-based identification, rental/return workflows, campus map visualization, maintenance reporting, and an administrator dashboard.
+
+Advanced features such as real-time GPS tracking, electronic locks, demand prediction, and smart redistribution will be implemented as higher-level modules depending on available development time and hardware availability.
+
+\section{Conclusion}
+
+CampusCycle combines web development, databases, geospatial concepts, machine learning, and optional IoT hardware into a practical campus mobility solution. The project addresses a real transportation problem while remaining feasible as a two-person semester project. Its modular design also allows the basic bicycle-sharing system to be developed first and advanced intelligence and hardware features to be added incrementally.
+
+\end{document}
