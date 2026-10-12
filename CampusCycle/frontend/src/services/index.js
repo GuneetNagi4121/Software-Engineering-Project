@@ -12,7 +12,13 @@ export const authApi = {
 };
 
 export const stationsApi = {
-  list: () => api.get('/stations').then((r) => r.data.stations),
+  /**
+   * @param {object} [params] availability=GOOD|LOW|NONE|INACTIVE, status,
+   *                          mapped=true, sort=availability|availability_desc
+   */
+  list: (params) => api.get('/stations', { params }).then((r) => r.data.stations),
+  /** Stations with coordinates + the active campus boundary. */
+  map: () => api.get('/stations/map').then((r) => r.data),
   get: (id) => api.get(`/stations/${id}`).then((r) => r.data.station),
   create: (payload) => api.post('/stations', payload).then((r) => r.data.station),
   update: (id, payload) => api.put(`/stations/${id}`, payload).then((r) => r.data.station),
@@ -37,10 +43,43 @@ export const bicyclesApi = {
 export const rentalsApi = {
   start: (qrCode) => api.post('/rentals', { qr_code: qrCode }).then((r) => r.data.rental),
   active: () => api.get('/rentals/active').then((r) => r.data.rental),
-  mine: () => api.get('/rentals/me').then((r) => r.data.rentals),
+  /** The signed-in student's own rides. @param {{status?:string}} [params] */
+  mine: (params) => api.get('/rentals/me', { params }).then((r) => r.data.rentals),
+  /** One ride — own ride for a student, any ride for an admin. */
+  get: (id) => api.get(`/rentals/${id}`).then((r) => r.data.rental),
   returnRide: (id, endStationId) =>
     api.post(`/rentals/${id}/return`, { end_station_id: endStationId }).then((r) => r.data.rental),
-  listAll: (params) => api.get('/rentals', { params }).then((r) => r.data.rentals),
+  /** Admin: every ride, filtered + paginated. Returns { rentals, pagination }. */
+  listAll: (params) => api.get('/rentals', { params }).then((r) => r.data),
+};
+
+export const maintenanceApi = {
+  report: (payload) => api.post('/maintenance', payload).then((r) => r.data),
+  mine: (params) => api.get('/maintenance/me', { params }).then((r) => r.data),
+  get: (id) => api.get(`/maintenance/${id}`).then((r) => r.data.report),
+  // Admin
+  list: (params) => api.get('/maintenance', { params }).then((r) => r.data),
+  stats: () => api.get('/maintenance/stats').then((r) => r.data.stats),
+  updateStatus: (id, payload) =>
+    api.patch(`/maintenance/${id}/status`, payload).then((r) => r.data),
+};
+
+export const analyticsApi = {
+  /** @param {{from?:string,to?:string}} [params] YYYY-MM-DD */
+  overview: (params) => api.get('/analytics', { params }).then((r) => r.data),
+};
+
+export const geofenceApi = {
+  config: () => api.get('/geofence').then((r) => r.data),
+  // Admin
+  updateConfig: (payload) => api.put('/geofence', payload).then((r) => r.data.geofence),
+  history: () => api.get('/geofence/history').then((r) => r.data.geofences),
+  submitLocation: (payload) => api.post('/geofence/locations', payload).then((r) => r.data),
+  locations: (params) => api.get('/geofence/locations', { params }).then((r) => r.data),
+  latestLocations: () => api.get('/geofence/locations/latest').then((r) => r.data),
+  events: (params) => api.get('/geofence/events', { params }).then((r) => r.data),
+  eventStats: () => api.get('/geofence/events/stats').then((r) => r.data.stats),
+  updateEvent: (id, payload) => api.patch(`/geofence/events/${id}`, payload).then((r) => r.data.event),
 };
 
 export const adminApi = {

@@ -8,6 +8,19 @@ const API_PROXY = process.env.VITE_API_PROXY || 'http://localhost:4000';
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      output: {
+        // Keep the heavy map and chart libraries out of the main bundle so
+        // the pages that do not use them are not penalised.
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          map: ['leaflet', 'react-leaflet'],
+          charts: ['recharts'],
+        },
+      },
+    },
+  },
   server: {
     port: 5175,
     proxy: {

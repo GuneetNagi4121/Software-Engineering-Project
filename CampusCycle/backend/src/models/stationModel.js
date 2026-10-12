@@ -1,28 +1,40 @@
 'use strict';
 
 const { pool } = require('../config/db');
+const { decorateStation } = require('../utils/availability');
 
 /**
  * Data access for the `stations` table.
+ *
+ * Read queries return the derived availability fields (availability_pct,
+ * availability_level) via decorateStation(), so every caller — list, detail
+ * and the campus map — sees exactly the same numbers.
  */
+
+const STATION_COLUMNS = `
+  s.id, s.name, s.location, s.capacity, s.status,
+  s.latitude, s.longitude,
+  s.created_at, s.updated_at`;
+
+const COUNT_COLUMNS = `
+  COUNT(b.id) FILTER (WHERE b.status = 'AVAILABLE')::int AS available_count,
+  COUNT(b.id)::int AS bikes_at_station`;
 
 async function listWithCounts(db = pool) {
   const { rows } = await db.query(
-    `SELECT s.id, s.name, s.location, s.capacity, s.status,
-            s.created_at, s.updated_at,
-            COUNT(b.id) FILTER (WHERE b.status = 'AVAILABLE')::int AS available_count,
-            COUNT(b.id)::int AS bikes_at_station
+    `SELECT ${STATION_COLUMNS}, ${COUNT_COLUMNS}
      FROM stations s
      LEFT JOIN bicycles b ON b.station_id = s.id
      GROUP BY s.id
      ORDER BY s.name`
   );
-  return rows;
+  return rows.map(decorateStation);
 }
 
 async function findById(id, db = pool) {
   const { rows } = await db.query(
-    `SELECT id, name, location, capacity, status, created_at, updated_at
+    `SELECT id, name, location, capacity, status, latitude, longitude,
+            created_at, updated_at
      FROM stations WHERE id = $1`,
     [id]
   );
@@ -31,36 +43,38 @@ async function findById(id, db = pool) {
 
 async function findByIdWithCounts(id, db = pool) {
   const { rows } = await db.query(
-    `SELECT s.id, s.name, s.location, s.capacity, s.status,
-            s.created_at, s.updated_at,
-            COUNT(b.id) FILTER (WHERE b.status = 'AVAILABLE')::int AS available_count,
-            COUNT(b.id)::int AS bikes_at_station
+    `SELECT ${STATION_COLUMNS}, ${COUNT_COLUMNS}
      FROM stations s
      LEFT JOIN bicycles b ON b.station_id = s.id
      WHERE s.id = $1
      GROUP BY s.id`,
     [id]
   );
-  return rows[0] || null;
+  return rows[0] ? decorateStation(rows[0]) : null;
 }
 
-async function create({ name, location, capacity, status }, db = pool) {
+const RETURNING = `
+  RETURNING id, name, location, capacity, status, latitude, longitude,
+            created_at, updated_at`;
+
+async function create({ name, location, capacity, status, latitude, longitude }, db = pool) {
   const { rows } = await db.query(
-    `INSERT INTO stations (name, location, capacity, status)
-     VALUES ($1, $2, $3, $4)
-     RETURNING id, name, location, capacity, status, created_at, updated_at`,
-    [name, location, capacity, status]
+    `INSERT INTO stations (name, location, capacity, status, latitude, longitude)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     ${RETURNING}`,
+    [name, location, capacity, status, latitude ?? null, longitude ?? null]
   );
   return rows[0];
 }
 
-async function update(id, { name, location, capacity, status }, db = pool) {
+async function update(id, { name, location, capacity, status, latitude, longitude }, db = pool) {
   const { rows } = await db.query(
     `UPDATE stations
-     SET name = $2, location = $3, capacity = $4, status = $5
+     SET name = $2, location = $3, capacity = $4, status = $5,
+         latitude = $6, longitude = $7
      WHERE id = $1
-     RETURNING id, name, location, capacity, status, created_at, updated_at`,
-    [id, name, location, capacity, status]
+     ${RETURNING}`,
+    [id, name, location, capacity, status, latitude ?? null, longitude ?? null]
   );
   return rows[0] || null;
 }

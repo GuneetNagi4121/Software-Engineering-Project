@@ -1,9 +1,11 @@
 'use strict';
 
 /**
- * Self-contained end-to-end test for CampusCycle Phase 1.
+ * Self-contained end-to-end test for CampusCycle Phase 1 — also serves as the
+ * regression suite for Phase 2 changes.
  *
- * It resets the database from database/schema.sql + database/seed.sql, boots the
+ * It resets the database from database/schema.sql + database/migrations/ +
+ * database/seed.sql, boots the
  * Express app on an ephemeral port, and exercises the required scenarios over
  * real HTTP against the live PostgreSQL database:
  *
@@ -25,6 +27,7 @@ const app = require('../app');
 const { pool } = require('../config/db');
 
 const DB_DIR = path.join(__dirname, '..', '..', '..', 'database');
+const MIGRATIONS_DIR = path.join(DB_DIR, 'migrations');
 
 let passed = 0;
 let failed = 0;
@@ -64,10 +67,18 @@ async function login(email, password) {
 }
 
 async function resetDatabase() {
-  const schema = fs.readFileSync(path.join(DB_DIR, 'schema.sql'), 'utf8');
-  const seed = fs.readFileSync(path.join(DB_DIR, 'seed.sql'), 'utf8');
-  await pool.query(schema);
-  await pool.query(seed);
+  // Base schema, then every migration, then the Phase 1 seed. The migrations
+  // are applied because the application now reads the Phase 2 columns; the
+  // Phase 2 seed is deliberately NOT applied, so this suite still asserts
+  // pure Phase 1 behaviour.
+  await pool.query(fs.readFileSync(path.join(DB_DIR, 'schema.sql'), 'utf8'));
+  for (const name of fs
+    .readdirSync(MIGRATIONS_DIR)
+    .filter((f) => f.endsWith('.sql'))
+    .sort()) {
+    await pool.query(fs.readFileSync(path.join(MIGRATIONS_DIR, name), 'utf8'));
+  }
+  await pool.query(fs.readFileSync(path.join(DB_DIR, 'seed.sql'), 'utf8'));
 }
 
 async function main() {

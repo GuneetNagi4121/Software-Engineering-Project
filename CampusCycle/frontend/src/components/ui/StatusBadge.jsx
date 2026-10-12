@@ -18,6 +18,30 @@ const MAPS = {
     ACTIVE: { tone: 'emerald', label: 'Active' },
     INACTIVE: { tone: 'slate', label: 'Inactive' },
   },
+  // Phase 2
+  availability: {
+    GOOD: { tone: 'emerald', label: 'Available' },
+    LOW: { tone: 'amber', label: 'Low availability' },
+    NONE: { tone: 'rose', label: 'None available' },
+    INACTIVE: { tone: 'slate', label: 'Station inactive' },
+  },
+  maintenance: {
+    OPEN: { tone: 'rose', label: 'Open' },
+    IN_PROGRESS: { tone: 'amber', label: 'In progress' },
+    RESOLVED: { tone: 'emerald', label: 'Resolved' },
+    CLOSED: { tone: 'slate', label: 'Closed' },
+  },
+  severity: {
+    LOW: { tone: 'slate', label: 'Low' },
+    MEDIUM: { tone: 'blue', label: 'Medium' },
+    HIGH: { tone: 'amber', label: 'High' },
+    CRITICAL: { tone: 'rose', label: 'Critical' },
+  },
+  alert: {
+    OPEN: { tone: 'rose', label: 'Open' },
+    ACKNOWLEDGED: { tone: 'amber', label: 'Acknowledged' },
+    RESOLVED: { tone: 'emerald', label: 'Resolved' },
+  },
 };
 
 const DOT = {

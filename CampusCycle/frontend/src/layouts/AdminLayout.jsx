@@ -1,6 +1,19 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Bike, MapPin, Route, LogOut, Menu, X, ShieldCheck } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Bike,
+  MapPin,
+  Route,
+  Wrench,
+  Map as MapIcon,
+  BarChart3,
+  ShieldAlert,
+  LogOut,
+  Menu,
+  X,
+  ShieldCheck,
+} from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../utils/format';
@@ -10,6 +23,10 @@ const NAV = [
   { to: '/admin/bicycles', label: 'Bicycles', icon: Bike },
   { to: '/admin/stations', label: 'Stations', icon: MapPin },
   { to: '/admin/rentals', label: 'Rentals', icon: Route },
+  { to: '/admin/maintenance', label: 'Maintenance', icon: Wrench },
+  { to: '/admin/map', label: 'Campus Map', icon: MapIcon },
+  { to: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+  { to: '/admin/geofence', label: 'Geofence Alerts', icon: ShieldAlert },
 ];
 
 function sideClass({ isActive }) {

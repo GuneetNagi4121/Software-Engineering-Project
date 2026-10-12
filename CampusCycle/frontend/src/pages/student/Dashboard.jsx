@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bike, MapPin, History, Plus, ArrowRight, Building2 } from 'lucide-react';
+import {
+  Bike,
+  MapPin,
+  History,
+  Plus,
+  ArrowRight,
+  Building2,
+  Map as MapIcon,
+  Wrench,
+} from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
 import StatCard from '../../components/ui/StatCard';
 import Card from '../../components/ui/Card';
@@ -14,7 +23,7 @@ import RentDialog from '../../components/RentDialog';
 import ReturnDialog from '../../components/ReturnDialog';
 import { useAuth } from '../../context/AuthContext';
 import { rentalsApi, stationsApi } from '../../services';
-import { formatDate, formatDuration } from '../../utils/format';
+import { formatDate, formatSeconds } from '../../utils/format';
 
 export default function StudentDashboard() {
   const { user } = useAuth();
@@ -67,11 +76,16 @@ export default function StudentDashboard() {
         title={`Hi, ${user?.name?.split(' ')[0] || 'there'} 👋`}
         subtitle="Here's your campus mobility at a glance."
         actions={
-          !active && (
-            <Button onClick={() => setRentOpen(true)}>
-              <Plus size={16} /> Find a cycle
+          <div className="flex items-center gap-2">
+            <Button variant="secondary" onClick={() => navigate('/app/map')}>
+              <MapIcon size={16} /> Campus map
             </Button>
-          )
+            {!active && (
+              <Button onClick={() => setRentOpen(true)}>
+                <Plus size={16} /> Find a cycle
+              </Button>
+            )}
+          </div>
         }
       />
 
@@ -140,7 +154,7 @@ export default function StudentDashboard() {
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="hidden text-sm tabular-nums text-slate-500 sm:block">
-                        {formatDuration(r.started_at, r.ended_at)}
+                        {formatSeconds(r.duration_seconds)}
                       </span>
                       <StatusBadge kind="rental" status={r.status} />
                     </div>
@@ -173,6 +187,23 @@ export default function StudentDashboard() {
               />
             ))
           )}
+
+          <Card className="p-4">
+            <h4 className="flex items-center gap-1.5 text-sm font-semibold text-slate-900">
+              <Wrench size={15} className="text-slate-400" /> Something wrong with a cycle?
+            </h4>
+            <p className="mt-1 text-sm text-slate-500">
+              Report it and the maintenance team will take a look.
+            </p>
+            <div className="mt-3 flex gap-2">
+              <Button size="sm" variant="secondary" onClick={() => navigate('/app/report')}>
+                Report an issue
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => navigate('/app/reports')}>
+                My reports
+              </Button>
+            </div>
+          </Card>
         </div>
       </div>
 

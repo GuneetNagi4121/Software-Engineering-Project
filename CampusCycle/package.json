@@ -2,7 +2,7 @@
   "name": "campuscycle",
   "version": "1.0.0",
   "private": true,
-  "description": "CampusCycle Phase 1 — root workspace scripts to run the backend (Express + PostgreSQL) and frontend (React + Vite) together.",
+  "description": "CampusCycle \u2014 root workspace scripts to run the backend (Express + PostgreSQL) and frontend (React + Vite) together.",
   "license": "MIT",
   "scripts": {
     "dev": "concurrently -n backend,frontend -c cyan,magenta \"npm run dev:backend\" \"npm run dev:frontend\"",
@@ -14,10 +14,16 @@
     "db:migrate": "npm --prefix backend run db:migrate",
     "db:seed": "npm --prefix backend run db:seed",
     "test:e2e": "npm --prefix backend run test:e2e",
-    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install"
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "db:migrate:phase2": "npm --prefix backend run db:migrate:phase2",
+    "db:seed:phase2": "npm --prefix backend run db:seed:phase2",
+    "test:e2e:phase2": "npm --prefix backend run test:e2e:phase2",
+    "test:all": "npm --prefix backend run test:all"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "concurrently": "^9.2.5",
+    "nodemon": "^3.1.14",
+    "vite": "^8.3.4"
   },
   "engines": {
     "node": ">=18"

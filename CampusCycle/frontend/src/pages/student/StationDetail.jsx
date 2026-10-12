@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Bike, MapPin } from 'lucide-react';
+import { ArrowLeft, Bike, MapPin, Wrench, Map as MapIcon } from 'lucide-react';
 import PageHeader from '../../components/ui/PageHeader';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
@@ -8,6 +8,7 @@ import Spinner from '../../components/ui/Spinner';
 import EmptyState from '../../components/ui/EmptyState';
 import StatusBadge from '../../components/ui/StatusBadge';
 import RentDialog from '../../components/RentDialog';
+import { formatCoords } from '../../utils/format';
 import { bicyclesApi, stationsApi, rentalsApi } from '../../services';
 import { useToast } from '../../context/ToastContext';
 
@@ -80,7 +81,16 @@ export default function StationDetail() {
       <PageHeader
         title={station.name}
         subtitle={station.location}
-        actions={<StatusBadge kind="station" status={station.status} />}
+        actions={
+          <div className="flex items-center gap-2">
+            <StatusBadge kind="station" status={station.status} />
+            {station.has_coordinates && (
+              <Button variant="secondary" size="sm" onClick={() => navigate('/app/map')}>
+                <MapIcon size={15} /> On the map
+              </Button>
+            )}
+          </div>
+        }
       />
 
       <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -97,12 +107,21 @@ export default function StationDetail() {
           <p className="mt-1 text-2xl font-semibold text-slate-900">{bikes.length}</p>
         </Card>
         <Card className="p-4">
-          <p className="text-sm text-slate-500">Status</p>
-          <p className="mt-1 text-2xl font-semibold text-slate-900 capitalize">
-            {station.status.toLowerCase()}
+          <p className="text-sm text-slate-500">Availability</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums text-slate-900">
+            {station.availability_pct}%
+          </p>
+          <p className="mt-1">
+            <StatusBadge kind="availability" status={station.availability_level} />
           </p>
         </Card>
       </div>
+
+      {station.has_coordinates && (
+        <p className="mb-6 font-mono text-xs text-slate-400">
+          {formatCoords(station.latitude, station.longitude)}
+        </p>
+      )}
 
       <h3 className="mb-3 font-semibold text-slate-900">Available cycles</h3>
 
@@ -166,6 +185,16 @@ export default function StationDetail() {
           </div>
         </div>
       )}
+
+      <Card className="mt-8 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex items-start gap-2 text-sm text-slate-600">
+          <Wrench size={16} className="mt-0.5 shrink-0 text-slate-400" />
+          Found a problem with a cycle at this station?
+        </p>
+        <Button variant="secondary" size="sm" onClick={() => navigate('/app/report')}>
+          Report an issue
+        </Button>
+      </Card>
 
       <RentDialog
         open={!!selectedBike}

@@ -35,22 +35,60 @@ const active = asyncHandler(async (req, res) => {
   res.json({ rental: rental || null });
 });
 
-/** GET /api/rentals/me — the current user's ride history. */
+/**
+ * GET /api/rentals/me — the signed-in user's ride history.
+ * The user id comes from the verified token, never from the request, so a
+ * student cannot read another student's rides by passing an id.
+ */
 const myHistory = asyncHandler(async (req, res) => {
-  res.json({ rentals: await rentalService.getHistoryForUser(req.user.id) });
+  const { status } = req.query;
+  res.json({
+    rentals: await rentalService.getHistoryForUser(req.user.id, { status }),
+  });
 });
 
-/** GET /api/rentals — all rides (admin), optional ?status= filter. */
+/**
+ * GET /api/rentals — all rides (admin), with filters and pagination.
+ * Filters: status, bicycle_id, station_id, from, to. Paging: limit/offset
+ * or page. Never unbounded.
+ */
 const listAll = asyncHandler(async (req, res) => {
-  const { status, limit } = req.query;
+  const {
+    status,
+    bicycle_id: bicycleId,
+    station_id: stationId,
+    from,
+    to,
+    limit,
+    offset,
+    page,
+  } = req.query;
+
   if (status && !RENTAL_STATUS_VALUES.includes(status)) {
     throw ApiError.badRequest('Invalid status filter');
   }
-  const rentals = await rentalService.listAll({
-    status,
-    limit: limit ? toPositiveInt(limit) : undefined,
-  });
-  res.json({ rentals });
+
+  const result = await rentalService.listPaged(
+    {
+      status,
+      bicycleId: bicycleId ? toPositiveInt(bicycleId) : undefined,
+      stationId: stationId ? toPositiveInt(stationId) : undefined,
+      from: from || undefined,
+      to: to || undefined,
+    },
+    { limit, offset, page }
+  );
+
+  res.json(result);
 });
 
-module.exports = { start, returnRide, active, myHistory, listAll };
+/** GET /api/rentals/:id — one ride (own ride, or any ride for an admin). */
+const getOne = asyncHandler(async (req, res) => {
+  const rental = await rentalService.getRideById(idParam(req), {
+    userId: req.user.id,
+    role: req.user.role,
+  });
+  res.json({ rental });
+});
+
+module.exports = { start, returnRide, active, myHistory, listAll, getOne };

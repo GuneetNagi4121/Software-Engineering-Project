@@ -5,7 +5,7 @@ import { Field, Input, Select } from '../ui/Field';
 import { stationsApi } from '../../services';
 import { useToast } from '../../context/ToastContext';
 
-const empty = { name: '', location: '', capacity: 10, status: 'ACTIVE' };
+const empty = { name: '', location: '', capacity: 10, status: 'ACTIVE', latitude: '', longitude: '' };
 
 export default function StationFormModal({ open, onClose, onSaved, station }) {
   const toast = useToast();
@@ -24,6 +24,8 @@ export default function StationFormModal({ open, onClose, onSaved, station }) {
             location: station.location || '',
             capacity: station.capacity ?? 10,
             status: station.status || 'ACTIVE',
+            latitude: station.latitude ?? '',
+            longitude: station.longitude ?? '',
           }
         : empty
     );
@@ -41,6 +43,10 @@ export default function StationFormModal({ open, onClose, onSaved, station }) {
       location: form.location.trim(),
       capacity: Number(form.capacity),
       status: form.status,
+      // Coordinates are optional, but must be sent as a pair. An empty string
+      // clears them, which is how a station is taken off the map.
+      latitude: form.latitude === '' ? '' : Number(form.latitude),
+      longitude: form.longitude === '' ? '' : Number(form.longitude),
     };
     setSaving(true);
     try {
@@ -121,6 +127,40 @@ export default function StationFormModal({ open, onClose, onSaved, station }) {
             </Select>
           </Field>
         </div>
+
+        <fieldset className="rounded-lg border border-slate-200 p-3">
+          <legend className="px-1 text-xs font-medium text-slate-600">
+            Map position (optional)
+          </legend>
+          <p className="mb-3 text-xs text-slate-500">
+            Fill both to place this station on the campus map, or leave both empty to keep it off
+            the map. Decimal degrees, e.g. 30.356800 / 76.362800.
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Latitude" htmlFor="latitude" error={errors.latitude}>
+              <Input
+                id="latitude"
+                value={form.latitude}
+                onChange={update('latitude')}
+                inputMode="decimal"
+                placeholder="30.356800"
+                className="font-mono"
+                invalid={!!errors.latitude}
+              />
+            </Field>
+            <Field label="Longitude" htmlFor="longitude" error={errors.longitude}>
+              <Input
+                id="longitude"
+                value={form.longitude}
+                onChange={update('longitude')}
+                inputMode="decimal"
+                placeholder="76.362800"
+                className="font-mono"
+                invalid={!!errors.longitude}
+              />
+            </Field>
+          </div>
+        </fieldset>
       </form>
     </Modal>
   );

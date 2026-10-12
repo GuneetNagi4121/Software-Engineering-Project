@@ -1,14 +1,30 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, MapPin, History, User, LogOut, Menu, X } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Bike,
+  Map as MapIcon,
+  MapPin,
+  History,
+  Wrench,
+  ClipboardList,
+  User,
+  LogOut,
+  Menu,
+  X,
+} from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import { useAuth } from '../context/AuthContext';
 import { cn } from '../utils/format';
 
 const NAV = [
   { to: '/app', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/app/find', label: 'Find a Bicycle', icon: Bike },
+  { to: '/app/map', label: 'Campus Map', icon: MapIcon },
   { to: '/app/stations', label: 'Stations', icon: MapPin },
   { to: '/app/rides', label: 'My Rides', icon: History },
+  { to: '/app/report', label: 'Report an Issue', icon: Wrench, primary: false },
+  { to: '/app/reports', label: 'My Reports', icon: ClipboardList, primary: false },
   { to: '/app/profile', label: 'Profile', icon: User },
 ];
 
@@ -35,15 +51,17 @@ export default function StudentLayout() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
           <Logo />
 
-          <nav className="hidden items-center gap-1 md:flex">
-            {NAV.map((item) => (
+          {/* The desktop bar shows the primary destinations; the mobile menu
+              and the "More" row below carry the full set. */}
+          <nav className="hidden items-center gap-1 lg:flex">
+            {NAV.filter((item) => item.primary !== false).map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end} className={navClass}>
                 <item.icon size={16} /> {item.label}
               </NavLink>
             ))}
           </nav>
 
-          <div className="hidden items-center gap-3 md:flex">
+          <div className="hidden items-center gap-3 lg:flex">
             <div className="text-right">
               <p className="text-sm font-medium leading-tight text-slate-900">{user?.name}</p>
               <p className="text-xs leading-tight text-slate-400">Student</p>
@@ -57,16 +75,17 @@ export default function StudentLayout() {
           </div>
 
           <button
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 md:hidden"
+            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
         {menuOpen && (
-          <div className="border-t border-slate-100 px-4 py-3 md:hidden">
+          <div className="border-t border-slate-100 px-4 py-3 lg:hidden">
             <nav className="flex flex-col gap-1">
               {NAV.map((item) => (
                 <NavLink
@@ -89,6 +108,19 @@ export default function StudentLayout() {
           </div>
         )}
       </header>
+
+      <div className="hidden border-b border-slate-100 bg-white lg:block">
+        <nav
+          className="mx-auto flex max-w-6xl items-center gap-1 px-4 py-1.5 sm:px-6"
+          aria-label="Maintenance"
+        >
+          {NAV.filter((item) => item.primary === false).map((item) => (
+            <NavLink key={item.to} to={item.to} className={navClass}>
+              <item.icon size={15} /> {item.label}
+            </NavLink>
+          ))}
+        </nav>
+      </div>
 
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
         <Outlet />

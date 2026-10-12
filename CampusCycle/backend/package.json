@@ -1,7 +1,7 @@
 {
   "name": "campuscycle-backend",
   "version": "1.0.0",
-  "description": "CampusCycle Phase 1 — Smart Campus Bicycle Sharing backend (Node.js + Express + PostgreSQL)",
+  "description": "CampusCycle Phase 1 \u2014 Smart Campus Bicycle Sharing backend (Node.js + Express + PostgreSQL)",
   "license": "MIT",
   "main": "src/server.js",
   "scripts": {
@@ -9,8 +9,12 @@
     "dev": "nodemon src/server.js",
     "db:migrate": "node src/scripts/migrate.js",
     "db:seed": "node src/scripts/seed.js",
-    "db:setup": "node src/scripts/migrate.js && node src/scripts/seed.js",
-    "test:e2e": "node src/tests/e2e.js"
+    "db:setup": "node src/scripts/migrate.js && node src/scripts/seed.js && node src/scripts/seed-phase2.js",
+    "test:e2e": "node src/tests/e2e.js",
+    "db:migrate:phase2": "node src/scripts/migrate-phase2.js",
+    "db:seed:phase2": "node src/scripts/seed-phase2.js",
+    "test:e2e:phase2": "node src/tests/e2e-phase2.js",
+    "test:all": "node src/tests/e2e.js && node src/tests/e2e-phase2.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

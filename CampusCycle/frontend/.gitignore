@@ -4,3 +4,6 @@ dist/
 .env.local
 *.log
 .vite/
+
+# Output from the optional Playwright flow test
+tests/screenshots/

@@ -10,6 +10,9 @@ const router = express.Router();
 // All station routes require authentication.
 router.use(authenticate);
 
+// Campus map data — declared before "/:id" so it is not shadowed.
+router.get('/map', stationController.map);
+
 // Readable by any authenticated user (students + admins).
 router.get('/', stationController.list);
 router.get('/:id', stationController.getOne);

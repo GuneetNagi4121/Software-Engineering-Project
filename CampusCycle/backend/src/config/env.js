@@ -13,6 +13,22 @@ function required(name, value) {
   return value;
 }
 
+/**
+ * Resolve the timezone used for day/hour bucketing in analytics. Both Node and
+ * PostgreSQL are told the same zone so "today" means the same thing in each.
+ * Defaults to the machine's zone, falling back to UTC.
+ */
+function resolveTimezone(name) {
+  const candidate = name || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: candidate }).format(new Date());
+    return candidate;
+  } catch {
+    console.warn(`Unknown APP_TIMEZONE "${candidate}", falling back to UTC`);
+    return 'UTC';
+  }
+}
+
 const env = {
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '4000', 10),
@@ -31,6 +47,9 @@ const env = {
   jwtSecret: required('JWT_SECRET', process.env.JWT_SECRET),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS || '10', 10),
+
+  // Reporting timezone for analytics day/hour buckets (IANA name).
+  appTimezone: resolveTimezone(process.env.APP_TIMEZONE),
 };
 
 module.exports = env;

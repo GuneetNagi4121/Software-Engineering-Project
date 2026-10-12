@@ -15,7 +15,7 @@ export default function StatCard({ label, value, icon: Icon, tone = 'slate', hin
     <Card className="p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm text-slate-500">{label}</p>
+          <p className="text-sm leading-snug text-slate-500">{label}</p>
           {loading ? (
             <div className="mt-2 h-7 w-12 animate-pulse rounded bg-slate-100" />
           ) : (

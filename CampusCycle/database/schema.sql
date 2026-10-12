@@ -1,15 +1,27 @@
 -- ===========================================================================
--- CampusCycle — PostgreSQL schema (Phase 1)
+-- CampusCycle — PostgreSQL base schema (Phase 1 tables)
 -- Smart Campus Bicycle Sharing and Mobility Management System
 --
 -- Re-runnable: drops existing objects, then recreates them. Intended for
--- development. Run with:  psql -d campuscycle -f database/schema.sql
---          or:            npm run db:migrate   (from backend/)
+-- development. Phase 2 objects (station coordinates, maintenance, geofencing)
+-- live in database/migrations/ and are applied on top of this file.
+--
+-- Run with:  psql -d campuscycle -f database/schema.sql
+--            psql -d campuscycle -f database/migrations/002_phase2.sql
+--      or:   npm run db:migrate          (base schema + every migration)
+--      or:   npm run db:migrate:phase2   (migrations only — keeps your data)
 -- ===========================================================================
 
 BEGIN;
 
 -- Clean slate (safe for dev). Order/CASCADE handles dependencies.
+-- Phase 2 tables are dropped first because they reference the Phase 1 tables.
+-- They are (re)created by database/migrations/002_phase2.sql, which
+-- `npm run db:migrate` applies immediately after this file.
+DROP TABLE IF EXISTS geofence_events        CASCADE;
+DROP TABLE IF EXISTS bicycle_location_pings CASCADE;
+DROP TABLE IF EXISTS maintenance_reports    CASCADE;
+DROP TABLE IF EXISTS geofence_config        CASCADE;
 DROP TABLE IF EXISTS rentals   CASCADE;
 DROP TABLE IF EXISTS bicycles  CASCADE;
 DROP TABLE IF EXISTS stations  CASCADE;

@@ -11,8 +11,25 @@ function idParam(req) {
   return id;
 }
 
+/**
+ * GET /api/stations — stations with live availability.
+ * Optional filters: ?availability=GOOD|LOW|NONE|INACTIVE, ?status=,
+ * ?mapped=true, ?sort=availability|availability_desc|name
+ */
 const list = asyncHandler(async (req, res) => {
-  res.json({ stations: await stationService.list() });
+  const { availability, status, mapped, sort } = req.query;
+  const stations = await stationService.list({
+    availability,
+    status,
+    mappedOnly: mapped === 'true' || mapped === '1',
+    sort,
+  });
+  res.json({ stations });
+});
+
+/** GET /api/stations/map — stations with coordinates + the campus boundary. */
+const map = asyncHandler(async (req, res) => {
+  res.json(await stationService.mapData());
 });
 
 const getOne = asyncHandler(async (req, res) => {
@@ -38,4 +55,4 @@ const remove = asyncHandler(async (req, res) => {
   res.json(await stationService.remove(idParam(req)));
 });
 
-module.exports = { list, getOne, create, update, setStatus, remove };
+module.exports = { list, map, getOne, create, update, setStatus, remove };

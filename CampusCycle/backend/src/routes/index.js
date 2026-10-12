@@ -8,6 +8,9 @@ const bicycleRoutes = require('./bicycleRoutes');
 const rentalRoutes = require('./rentalRoutes');
 const userRoutes = require('./userRoutes');
 const adminRoutes = require('./adminRoutes');
+const maintenanceRoutes = require('./maintenanceRoutes');
+const analyticsRoutes = require('./analyticsRoutes');
+const geofenceRoutes = require('./geofenceRoutes');
 
 const router = express.Router();
 
@@ -19,5 +22,10 @@ router.use('/bicycles', bicycleRoutes);
 router.use('/rentals', rentalRoutes);
 router.use('/users', userRoutes);
 router.use('/admin', adminRoutes);
+
+// --- Phase 2 ---------------------------------------------------------------
+router.use('/maintenance', maintenanceRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/geofence', geofenceRoutes);
 
 module.exports = router;
