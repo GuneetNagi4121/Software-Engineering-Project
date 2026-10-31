@@ -2,7 +2,7 @@
   "name": "campuscycle",
   "version": "1.0.0",
   "private": true,
-  "description": "CampusCycle \u2014 root workspace scripts to run the backend (Express + PostgreSQL) and frontend (React + Vite) together.",
+  "description": "CampusCycle — root workspace scripts to run the backend (Express + PostgreSQL) and frontend (React + Vite) together.",
   "license": "MIT",
   "scripts": {
     "dev": "concurrently -n backend,frontend -c cyan,magenta \"npm run dev:backend\" \"npm run dev:frontend\"",
@@ -27,5 +27,9 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@neon/config": "^1.10.0",
+    "@neon/env": "^1.6.8"
   }
 }

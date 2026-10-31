@@ -6,7 +6,11 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { pool } = require('../config/db');
+const env = require('../config/env');
+const { createPool } = require('../config/db');
+
+// Schema changes and seeding use the direct (non-pooled) connection.
+const pool = createPool(env.databaseUrlUnpooled);
 
 const SEED_PATH = path.join(__dirname, '..', '..', '..', 'database', 'seed.sql');
 

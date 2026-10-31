@@ -1,6 +1,14 @@
 'use strict';
 
-require('dotenv').config();
+const path = require('path');
+const dotenv = require('dotenv');
+
+// `neon deploy` / `neon env pull` write the Neon connection strings to
+// CampusCycle/.env.local. Load it first so it takes precedence over
+// backend/.env; real environment variables (e.g. on Render) still win, as
+// dotenv never overrides a variable that is already set.
+dotenv.config({ path: path.resolve(__dirname, '..', '..', '..', '.env.local') });
+dotenv.config();
 
 /**
  * Centralised, validated environment configuration.
@@ -36,6 +44,9 @@ const env = {
 
   // Prefer a single DATABASE_URL; otherwise assemble from parts.
   databaseUrl: process.env.DATABASE_URL || null,
+  // Direct (non-pooled) connection for schema migrations and seeding. Neon
+  // provides it as DATABASE_URL_UNPOOLED; elsewhere it is the same database.
+  databaseUrlUnpooled: process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL || null,
   db: {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '5432', 10),

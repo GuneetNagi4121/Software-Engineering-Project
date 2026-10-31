@@ -4,18 +4,26 @@ const { Pool } = require('pg');
 const env = require('./env');
 
 /**
- * A single shared connection pool for the whole app.
- * Uses DATABASE_URL when provided, otherwise individual DB_* parts.
+ * Build a pool from a connection string, or from the individual DB_* parts
+ * when no string is given.
  */
-const pool = env.databaseUrl
-  ? new Pool({ connectionString: env.databaseUrl })
-  : new Pool({
-      host: env.db.host,
-      port: env.db.port,
-      database: env.db.name,
-      user: env.db.user,
-      password: env.db.password,
-    });
+function createPool(connectionString) {
+  return connectionString
+    ? new Pool({ connectionString })
+    : new Pool({
+        host: env.db.host,
+        port: env.db.port,
+        database: env.db.name,
+        user: env.db.user,
+        password: env.db.password,
+      });
+}
+
+/**
+ * A single shared connection pool for the whole app.
+ * Uses DATABASE_URL (Neon's pooled endpoint) when provided.
+ */
+const pool = createPool(env.databaseUrl);
 
 pool.on('error', (err) => {
   // A pooled client experienced a fatal error while idle.
@@ -56,4 +64,4 @@ async function withTransaction(fn) {
   }
 }
 
-module.exports = { pool, query, withTransaction };
+module.exports = { pool, createPool, query, withTransaction };
